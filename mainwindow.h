@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QStandardItemModel>
+#include <QStandardItem>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -13,9 +15,14 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow(QWidget *parent = nullptr);
+    void setCView();
     ~MainWindow();
+
+private slots:
+    void on_btnShowJson_clicked();
 
 private:
     Ui::MainWindow *ui;
+    QStandardItemModel* viewModel = new QStandardItemModel;
 };
 #endif // MAINWINDOW_H
