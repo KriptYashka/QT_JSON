@@ -4,6 +4,8 @@
 #include <QMainWindow>
 #include <QStandardItemModel>
 #include <QStandardItem>
+#include <QFileDialog>
+#include "logic.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -20,6 +22,8 @@ public:
 
 private slots:
     void on_btnShowJson_clicked();
+
+    void on_btnReadJson_clicked();
 
 private:
     Ui::MainWindow *ui;

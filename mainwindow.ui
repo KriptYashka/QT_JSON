@@ -17,10 +17,10 @@
    <widget class="QColumnView" name="colView">
     <property name="geometry">
      <rect>
-      <x>160</x>
-      <y>160</y>
-      <width>256</width>
-      <height>192</height>
+      <x>180</x>
+      <y>70</y>
+      <width>511</width>
+      <height>351</height>
      </rect>
     </property>
    </widget>
@@ -35,6 +35,19 @@
     </property>
     <property name="text">
      <string>Show JSON</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnReadJson">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>220</y>
+      <width>80</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Read JSON</string>
     </property>
    </widget>
   </widget>

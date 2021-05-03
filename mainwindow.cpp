@@ -30,3 +30,10 @@ void MainWindow::on_btnShowJson_clicked(){
         }
     ui->colView->setModel(viewModel);
 }
+
+void MainWindow::on_btnReadJson_clicked(){
+    //QString filePath = QFileDialog::getOpenFileName(this, tr("Open file"));
+    string path = "E:/Git/KriptYashka/build-QT_JSON-Desktop_Qt_6_0_1_MinGW_64_bit-Debug/test.json";
+    //JsonData jsondata = JsonData(filePath.toStdString());
+    JsonData jsondata = JsonData(path);
+}
