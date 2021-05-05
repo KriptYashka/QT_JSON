@@ -17,12 +17,10 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow(QWidget *parent = nullptr);
-    void setCView();
     ~MainWindow();
 
 private slots:
     void on_btnShowJson_clicked();
-
     void on_btnReadJson_clicked();
 
 private:

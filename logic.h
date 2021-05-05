@@ -27,8 +27,8 @@ public:
         childrenCount = 0;
     }
 
-    void addChild(GroupItem newItem){ // Функция удочерения
-        children.push_back(newItem);
+    void addChild(GroupItem newChild){ // Функция удочерения
+        children.push_back(newChild);
         childrenCount++;
     }
 
@@ -45,10 +45,6 @@ public:
 
     string getName(){
         return name;
-    }
-
-    bool hasChildren(){
-        return childrenCount != 0;
     }
 
     int getChildrenCount(){
@@ -77,13 +73,14 @@ class JsonData{
 private:
     /* Поля */
     bool hasError;
-    /* Методы */
     vector<GroupItem> rootGroupItems;
-    vector<GroupItem> getChildren(string text){
-        /* Сначала получаем нужный текст */
+
+    /* Методы */
+    string getInnerText(string text){
+        /* Передается текст, внутри {}. Обрабатывается. */
         string reqText = "";
         int count = 1, index = 1;
-        while(count > 0){
+        while (count > 0){
             char symbol = text[index++];
             if (symbol == '{'){
                 count++;
@@ -98,11 +95,17 @@ private:
             }
             reqText += symbol;
         }
+        return reqText;
+    }
+
+    vector<GroupItem> getChildren(string text){
+        /* Сначала получаем нужный текст */
+        string reqText = getInnerText(text);
         /* Затем заполняем вектор */
         vector<GroupItem> groupRoot;
+        GroupItem item;
         string word = "";
         int i = 0; // Чтобы не трогать первую скобку
-        GroupItem item;
         while (i < (int)reqText.length()){
             char symbol = reqText[i++]; // Внимание! Сразу увеличиваем индекс.
             if (symbol == ':'){
@@ -136,6 +139,7 @@ private:
             }
             word += symbol;
         }
+        /* В случае, если нет запятой в конце текста */
         if (word != ""){
             item.addChild(word);
             groupRoot.push_back(item);
@@ -143,12 +147,18 @@ private:
         return groupRoot;
     }
 
+    bool isJSONFile(string path){
+        if ((int)path.find(".json") == -1)
+            return false;
+        return true;
+    }
+
 public:
     JsonData(string path){
         /* Считывает данные из файла и записывает */
         hasError = true;
         ifstream myFile(path);
-        if (!myFile.is_open()){
+        if (!myFile.is_open() && isJSONFile(path)){
             return;
         }
         hasError = false;

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
+    <width>1009</width>
     <height>600</height>
    </rect>
   </property>
@@ -19,16 +19,27 @@
      <rect>
       <x>180</x>
       <y>70</y>
-      <width>511</width>
-      <height>351</height>
+      <width>781</width>
+      <height>241</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+     </font>
+    </property>
+    <property name="editTriggers">
+     <set>QAbstractItemView::DoubleClicked</set>
+    </property>
+    <property name="resizeGripsVisible">
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QPushButton" name="btnShowJson">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>180</y>
+      <x>60</x>
+      <y>150</y>
       <width>80</width>
       <height>21</height>
      </rect>
@@ -40,8 +51,8 @@
    <widget class="QPushButton" name="btnReadJson">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>220</y>
+      <x>60</x>
+      <y>190</y>
       <width>80</width>
       <height>21</height>
      </rect>
@@ -56,7 +67,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>1009</width>
      <height>20</height>
     </rect>
    </property>
