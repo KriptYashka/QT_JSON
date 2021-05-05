@@ -75,10 +75,11 @@ private:
             char symbol = text[index++];
             if (symbol == '{'){
                 count++;
-                continue;
             } else if (symbol == '}'){
                 count--;
-                continue;
+                if (count == 0){
+                    continue;
+                }
             }
             if (symbol == ' ' || symbol == '\0' || symbol == '\n'){
                 continue;
@@ -88,7 +89,7 @@ private:
         /* Затем заполняем вектор */
         vector<GroupItem> groupRoot;
         string word = "";
-        int i = 0;
+        int i = 0; // Чтобы не трогать первую скобку
         GroupItem item;
         while (i < (int)reqText.length()){
             char symbol = reqText[i++]; // Внимание! Сразу увеличиваем индекс.
@@ -108,14 +109,18 @@ private:
                 continue;
             }
             if (symbol == '{'){
-                int end_i = reqText.find('}', i);
-                string childText = reqText.substr(i, end_i);
+                int end_i = reqText.find('}');
+                string childText = reqText.substr(i - 1, end_i - i + 2);
                 vector<GroupItem> children = getChildren(childText);
 
                 item.addChild(children);
                 groupRoot.push_back(item);
                 item.clear();
                 i = end_i; // Переносимся под конец пройденного текста
+                continue;
+            }
+            if (symbol == '}'){
+                continue;
             }
             word += symbol;
         }
@@ -141,8 +146,21 @@ public:
         while (getline(myFile, line)){
             all_text += line;
         }
-
         rootGroupItem = getChildren(all_text);
+    }
+
+    vector<GroupItem> getData(){
+        vector<GroupItem> data;
+        if (hasError)
+            return data;
+        return rootGroupItem;
+    }
+
+    GroupItem at(int row){
+        GroupItem data;
+        if (hasError || (row < 0 || row >= (int)rootGroupItem.size()))
+            return data;
+        return rootGroupItem.at(row);
     }
 
     bool isError(){
