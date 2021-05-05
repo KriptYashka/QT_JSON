@@ -43,8 +43,20 @@ public:
         name = title;
     }
 
+    string getName(){
+        return name;
+    }
+
+    bool hasChildren(){
+        return childrenCount != 0;
+    }
+
     int getChildrenCount(){
         return childrenCount;
+    }
+
+    GroupItem getChild(int index){
+        return children.at(index);
     }
 
     void clear(){
@@ -66,7 +78,7 @@ private:
     /* Поля */
     bool hasError;
     /* Методы */
-    vector<GroupItem> rootGroupItem;
+    vector<GroupItem> rootGroupItems;
     vector<GroupItem> getChildren(string text){
         /* Сначала получаем нужный текст */
         string reqText = "";
@@ -146,21 +158,25 @@ public:
         while (getline(myFile, line)){
             all_text += line;
         }
-        rootGroupItem = getChildren(all_text);
+        rootGroupItems = getChildren(all_text);
     }
 
     vector<GroupItem> getData(){
         vector<GroupItem> data;
         if (hasError)
             return data;
-        return rootGroupItem;
+        return rootGroupItems;
+    }
+
+    int rootSize(){
+        return rootGroupItems.size();
     }
 
     GroupItem at(int row){
         GroupItem data;
-        if (hasError || (row < 0 || row >= (int)rootGroupItem.size()))
+        if (hasError || (row < 0 || row >= (int)rootGroupItems.size()))
             return data;
-        return rootGroupItem.at(row);
+        return rootGroupItems.at(row);
     }
 
     bool isError(){
