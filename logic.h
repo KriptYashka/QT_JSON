@@ -5,6 +5,7 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
+#include <string.h>
 using namespace std;
 
 class GroupItem{
@@ -26,9 +27,16 @@ public:
         childrenCount = 0;
     }
 
-    void addItem(GroupItem newItem){
+    void addChild(GroupItem newItem){ // Функция удочерения
         children.push_back(newItem);
         childrenCount++;
+    }
+
+    void addChild(vector<GroupItem> newVectorChilds){ // Функция удочерения близняшек ( перегрузка )
+        for (GroupItem child : newVectorChilds){
+            children.push_back(child);
+            childrenCount++;
+        }
     }
 
     void setName(string title){
@@ -38,57 +46,107 @@ public:
     int getChildrenCount(){
         return childrenCount;
     }
+
+    void clear(){
+        name = "";
+        children.clear();
+        childrenCount = 0;
+    }
+
+    bool isEmpty(){
+        if (name == "" && childrenCount == 0){
+            return true;
+        }
+            return false;
+    }
 };
 
 class JsonData{
 private:
+    /* Поля */
+    bool hasError;
+    /* Методы */
     vector<GroupItem> rootGroupItem;
+    vector<GroupItem> getChildren(string text){
+        /* Сначала получаем нужный текст */
+        string reqText = "";
+        int count = 1, index = 1;
+        while(count > 0){
+            char symbol = text[index++];
+            if (symbol == '{'){
+                count++;
+                continue;
+            } else if (symbol == '}'){
+                count--;
+                continue;
+            }
+            if (symbol == ' ' || symbol == '\0' || symbol == '\n'){
+                continue;
+            }
+            reqText += symbol;
+        }
+        /* Затем заполняем вектор */
+        vector<GroupItem> groupRoot;
+        string word = "";
+        int i = 0;
+        GroupItem item;
+        while (i < (int)reqText.length()){
+            char symbol = reqText[i++]; // Внимание! Сразу увеличиваем индекс.
+            if (symbol == ':'){
+                item = GroupItem(word);
+                word = "";
+                continue;
+            }
+            if (symbol == ','){ // должны добавить в корневой вектор, если это обычный элемент
+                if (item.isEmpty())
+                    continue;
+                GroupItem child = GroupItem(word);
+                item.addChild(child);
+                groupRoot.push_back(item);
+                item.clear();
+                word = "";
+                continue;
+            }
+            if (symbol == '{'){
+                int end_i = reqText.find('}', i);
+                string childText = reqText.substr(i, end_i);
+                vector<GroupItem> children = getChildren(childText);
+
+                item.addChild(children);
+                groupRoot.push_back(item);
+                item.clear();
+                i = end_i; // Переносимся под конец пройденного текста
+            }
+            word += symbol;
+        }
+        if (word != ""){
+            item.addChild(word);
+            groupRoot.push_back(item);
+        }
+        return groupRoot;
+    }
 
 public:
-    JsonData(){};
     JsonData(string path){
         /* Считывает данные из файла и записывает */
+        hasError = true;
         ifstream myFile(path);
-        if (!myFile.is_open()) throw runtime_error("Could not open file");
+        if (!myFile.is_open()){
+            return;
+        }
+        hasError = false;
 
-        string word = "";
         string line = "";
         string all_text = "";
-        bool isChild = false,  isRoot = true;
-        GroupItem rootItem;
-
         while (getline(myFile, line)){
             all_text += line;
         }
 
-        for (int i = 0; i < (int)all_text.length(); ++i){
-            char symbol = all_text[i];
-            if (symbol == ' ' || symbol == '{'){
-                continue;
-            }
-            if (symbol == ',' || symbol == '}'){
-                if (isChild){
-                    rootItem.addItem(GroupItem(word));
-                    isChild = false;
-                }
+        rootGroupItem = getChildren(all_text);
+    }
 
-                if (isRoot){
-                    rootGroupItem.push_back(rootItem);
-                }
-                word = "";
-                continue;
-            }
-            if (symbol == ':'){
-                if (!isChild){
-                    rootItem = GroupItem(word);
-                }
-                word = "";
-                isChild = true;
-                continue;
-            }
-            word += symbol;
-        }
-        line = "";
+    bool isError(){
+        return hasError;
     }
 };
 
