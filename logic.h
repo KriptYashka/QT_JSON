@@ -98,6 +98,19 @@ private:
         return reqText;
     }
 
+    int bracket_position(string reqText, int index){
+        int count = 1;
+        while (count > 0){
+            if (reqText[index] == '{'){
+                count++;
+            }
+            if (reqText[index++] == '}'){
+                count--;
+            }
+        }
+        return index;
+    }
+
     vector<GroupItem> getChildren(string text){
         /* Сначала получаем нужный текст */
         string reqText = getInnerText(text);
@@ -105,6 +118,7 @@ private:
         vector<GroupItem> groupRoot;
         GroupItem item;
         string word = "";
+        bool flag_arr = false;
         int i = 0; // Чтобы не трогать первую скобку
         while (i < (int)reqText.length()){
             char symbol = reqText[i++]; // Внимание! Сразу увеличиваем индекс.
@@ -113,28 +127,39 @@ private:
                 word = "";
                 continue;
             }
-            if (symbol == ','){ // должны добавить в корневой вектор, если это обычный элемент
+            if (symbol == ',' || symbol == ']'){ // должны добавить в корневой вектор, если это обычный элемент
                 if (item.isEmpty())
                     continue;
                 GroupItem child = GroupItem(word);
                 item.addChild(child);
-                groupRoot.push_back(item);
-                item.clear();
                 word = "";
+                if (symbol == ']'){
+                    flag_arr = false;
+                }
+                if (!flag_arr){
+                    groupRoot.push_back(item);
+                    item.clear();
+                }
                 continue;
             }
             if (symbol == '{'){
-                int end_i = reqText.find('}');
+                int end_i = bracket_position(reqText, i);
                 string childText = reqText.substr(i - 1, end_i - i + 2);
                 vector<GroupItem> children = getChildren(childText);
 
                 item.addChild(children);
-                groupRoot.push_back(item);
-                item.clear();
+                if (!flag_arr){
+                    groupRoot.push_back(item);
+                    item.clear();
+                }
                 i = end_i; // Переносимся под конец пройденного текста
                 continue;
             }
             if (symbol == '}'){
+                continue;
+            }
+            if (symbol == '['){
+                flag_arr = true;
                 continue;
             }
             word += symbol;
