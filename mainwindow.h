@@ -5,7 +5,6 @@
 #include <QStandardItemModel>
 #include <QStandardItem>
 #include <QFileDialog>
-#include "logic.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }

@@ -1,78 +1,28 @@
-#ifndef LOGIC_H
-#define LOGIC_H
+#ifndef JSONDATA_H
+#define JSONDATA_H
 
 #include <string>
 #include <vector>
 #include <fstream>
 #include <iostream>
 #include <string.h>
+
+#include "groupitem.h"
 using namespace std;
-
-class GroupItem{
-private:
-    string name;
-    vector<GroupItem> children;
-    int childrenCount;
-
-public:
-    GroupItem(){
-        name = "";
-        children.clear();
-        childrenCount = 0;
-    }
-
-    GroupItem(string title){
-        name = title;
-        children.clear();
-        childrenCount = 0;
-    }
-
-    void addChild(GroupItem newChild){ // Функция удочерения
-        children.push_back(newChild);
-        childrenCount++;
-    }
-
-    void addChild(vector<GroupItem> newVectorChilds){ // Функция удочерения близняшек ( перегрузка )
-        for (GroupItem child : newVectorChilds){
-            children.push_back(child);
-            childrenCount++;
-        }
-    }
-
-    void setName(string title){
-        name = title;
-    }
-
-    string getName(){
-        return name;
-    }
-
-    int getChildrenCount(){
-        return childrenCount;
-    }
-
-    GroupItem getChild(int index){
-        return children.at(index);
-    }
-
-    void clear(){
-        name = "";
-        children.clear();
-        childrenCount = 0;
-    }
-
-    bool isEmpty(){
-        if (name == "" && childrenCount == 0){
-            return true;
-        }
-            return false;
-    }
-};
 
 class JsonData{
 private:
     /* Поля */
-    bool hasError;
+    int cod;
+    /*
+    Коды программы:
+    200 - все отлично
+    400 - файл не открывается или не json формат
+    401 - неверное количество фигурных или квадратных скобок
+    402 - json-файл содержит запрещенный символ
+    403 - не закрыты кавычки
+    */
+    string text_cod;
     vector<GroupItem> rootGroupItems;
 
     /* Методы */
@@ -116,10 +66,12 @@ private:
         string reqText = getInnerText(text);
         /* Затем заполняем вектор */
         vector<GroupItem> groupRoot;
-        GroupItem item;
+
+        GroupItem item; // временный элемент
+
         string word = "";
         bool flag_arr = false;
-        int i = 0; // Чтобы не трогать первую скобку
+        int i = 0;
         while (i < (int)reqText.length()){
             char symbol = reqText[i++]; // Внимание! Сразу увеличиваем индекс.
             if (symbol == ':'){
@@ -145,7 +97,7 @@ private:
             if (symbol == '{'){
                 int end_i = bracket_position(reqText, i);
                 string childText = reqText.substr(i - 1, end_i - i + 2);
-                vector<GroupItem> children = getChildren(childText);
+                vector<GroupItem> children = getChildren(childText); // рекурсия
 
                 item.addChild(children);
                 if (!flag_arr){
@@ -173,33 +125,83 @@ private:
     }
 
     bool isJSONFile(string path){
+        bool flag = true;
         if ((int)path.find(".json") == -1)
-            return false;
-        return true;
+            flag = false;
+        return flag;
+    }
+
+    int correctData(string text){
+        /* Проверяет, что файл не сломан */
+        bool isMark_1 = false, isMark_2 = false; // Одинарные и двойные кавычки
+        int cod = 200;
+        int count_figure = 0, count_square = 0;
+        string forbidden_symbols = "+-*/|_\()<>;%^&!~";
+        for (char symbol : text){
+            if (count_figure < 0 || count_square < 0){
+                cod = 401;
+                break;
+            }
+            if (!isMark_1 && !isMark_2 && (int)forbidden_symbols.find(symbol) != -1){
+                cod = 402;
+                break;
+            }
+            switch (symbol) {
+            case '{':
+                if (!isMark_2 || !isMark_1)
+                    count_figure++;
+                break;
+            case '}':
+                if (!isMark_2 || !isMark_1)
+                    count_figure--;
+                break;
+            case '[':
+                if (!isMark_2 || !isMark_1)
+                    count_square++;
+                break;
+            case ']':
+                if (!isMark_2 || !isMark_1)
+                    count_square--;
+                break;
+            case '"':
+                if (!isMark_1)
+                    isMark_2 = !isMark_2;
+                break;
+            case '\'':
+                if (!isMark_2)
+                    isMark_1 = !isMark_1;
+                break;
+            }
+        }
+        if ((count_figure > 0 || count_square > 0) && cod == 200)
+            cod = 401;
+        if ((isMark_1 || isMark_2) && cod == 200)
+            cod = 403;
+        return cod;
     }
 
 public:
     JsonData(string path){
         /* Считывает данные из файла и записывает */
-        hasError = true;
+        cod = 400;
         ifstream myFile(path);
         if (!myFile.is_open() && isJSONFile(path)){
             return;
         }
-        hasError = false;
-
         string line = "";
         string all_text = "";
         while (getline(myFile, line)){
             all_text += line;
         }
-        rootGroupItems = getChildren(all_text);
+        cod = correctData(all_text);
+        if (cod == 200)
+            rootGroupItems = getChildren(all_text);
     }
 
     vector<GroupItem> getData(){
-        vector<GroupItem> data;
-        if (hasError)
-            return data;
+        vector<GroupItem> empty_data;
+        if (cod != 200)
+            return empty_data;
         return rootGroupItems;
     }
 
@@ -208,15 +210,44 @@ public:
     }
 
     GroupItem at(int row){
-        GroupItem data;
-        if (hasError || (row < 0 || row >= (int)rootGroupItems.size()))
-            return data;
+        GroupItem empty_data;
+        if (cod != 200 || (row < 0 || row >= (int)rootGroupItems.size()))
+            return empty_data;
         return rootGroupItems.at(row);
     }
 
     bool isError(){
-        return hasError;
+        return cod != 200;
+    }
+
+    int getCod(){
+        return cod;
+    }
+
+    string getCodeText(){
+        string text;
+        switch (cod) {
+        case 200:
+            text = "JSON загружен.";
+            break;
+        case 400:
+            text = "Файл невозможно открыть";
+            break;
+        case 401:
+            text = "JSON содержит неверное количество фигурных или квадратных скобок.";
+            break;
+        case 402:
+            text = "JSON содержит запрещенные символы.";
+            break;
+        case 403:
+            text = "Внутри JSON открыта кавычка.";
+            break;
+        default:
+            text = "Неизвестная ошибка";
+            break;
+        }
+        return text;
     }
 };
 
-#endif // LOGIC_H
+#endif // JSONDATA_H

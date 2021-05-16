@@ -1,8 +1,12 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "jsondata.h"
 
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow){
     ui->setupUi(this);
+    this->setWindowTitle("KriptYashka - JSON");
+    QIcon winIcon("favicon.ico");
+    this->setWindowIcon(winIcon);
 }
 
 MainWindow::~MainWindow()
@@ -26,14 +30,29 @@ QStandardItem* convert(GroupItem item){
 
 void MainWindow::on_btnReadJson_clicked(){
     //QString filePath = QFileDialog::getOpenFileName(this, tr("Open file"));
-    string path = "E:/Git/KriptYashka/build-QT_JSON-Desktop_Qt_6_0_1_MinGW_64_bit-Debug/test.json";
+    string path = "test.json";
     //JsonData jsondata = JsonData(filePath.toStdString());
     JsonData jsondata = JsonData(path);
-    vector<GroupItem> rootGroupItems = jsondata.getData();
+    string resultText = jsondata.getCodeText();
+    ui->resultLabel->setText(QString::fromStdString(resultText));
+    QFont font = ui->resultLabel->font();
     viewModel->clear();
-    for (int groupnum = 0; groupnum < jsondata.rootSize() ; ++groupnum){
-        GroupItem rootItem = jsondata.at(groupnum);
-        QStandardItem *rootGroup = convert(rootItem);
-        viewModel->appendRow(rootGroup);
+
+    if (jsondata.isError()){
+        font.setBold(true);
+        ui->resultLabel->setStyleSheet("QLabel { color : red; } QLabel:hover { color : black; }");
+        ui->btnShowJson->setDisabled(true);
+
+    } else {
+        ui->btnShowJson->setDisabled(false);
+        font.setBold(false);
+        ui->resultLabel->setStyleSheet("QLabel { color : green;  } QLabel:hover { color : black; }");
+        ui->resultLabel->setFont(font);
+        for (int groupnum = 0; groupnum < jsondata.rootSize() ; ++groupnum){
+            GroupItem rootItem = jsondata.at(groupnum);
+            QStandardItem *rootGroup = convert(rootItem);
+            viewModel->appendRow(rootGroup);
+        }
     }
+
 }
