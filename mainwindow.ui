@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1009</width>
-    <height>600</height>
+    <height>669</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -67,8 +67,8 @@
    <widget class="QLabel" name="resultLabel">
     <property name="geometry">
      <rect>
-      <x>210</x>
-      <y>330</y>
+      <x>170</x>
+      <y>10</y>
       <width>661</width>
       <height>41</height>
      </rect>
@@ -83,6 +83,33 @@
     </property>
     <property name="text">
      <string>Результат обработки файла</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="jsontext">
+    <property name="geometry">
+     <rect>
+      <x>170</x>
+      <y>320</y>
+      <width>781</width>
+      <height>291</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Box</enum>
+    </property>
+    <property name="text">
+     <string>Исходный код</string>
+    </property>
+    <property name="margin">
+     <number>20</number>
     </property>
    </widget>
   </widget>

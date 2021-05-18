@@ -22,16 +22,21 @@ private:
     402 - json-файл содержит запрещенный символ
     403 - не закрыты кавычки
     */
-    string text_cod;
+    string codText;
+    string jsonText;
     vector<GroupItem> rootGroupItems;
+
 
     /* Методы */
     string getInnerText(string text){
-        /* Передается текст, внутри {}. Обрабатывается. */
+        /* Передается текст, внутри {}. Обрабатывается от лишних знаков. */
         string reqText = "";
         int count = 1, index = 1;
         while (count > 0){
             char symbol = text[index++];
+            if (symbol == ' ' || symbol == '\0' || symbol == '\n'){
+                continue;
+            }
             if (symbol == '{'){
                 count++;
             } else if (symbol == '}'){
@@ -40,21 +45,18 @@ private:
                     continue;
                 }
             }
-            if (symbol == ' ' || symbol == '\0' || symbol == '\n'){
-                continue;
-            }
             reqText += symbol;
         }
         return reqText;
     }
 
-    int bracket_position(string reqText, int index){
+    int bracketPosition(string reqText, int index){
         int count = 1;
         while (count > 0){
-            if (reqText[index] == '{'){
+            char c = reqText[index++];
+            if (c == '{'){
                 count++;
-            }
-            if (reqText[index++] == '}'){
+            } else if (c == '}'){
                 count--;
             }
         }
@@ -95,7 +97,7 @@ private:
                 continue;
             }
             if (symbol == '{'){
-                int end_i = bracket_position(reqText, i);
+                int end_i = bracketPosition(reqText, i);
                 string childText = reqText.substr(i - 1, end_i - i + 2);
                 vector<GroupItem> children = getChildren(childText); // рекурсия
 
@@ -132,7 +134,7 @@ private:
     }
 
     int correctData(string text){
-        /* Проверяет, что файл не сломан */
+        /* Проверяет, что файл не сломан. Возвращает код ошибки. */
         bool isMark_1 = false, isMark_2 = false; // Одинарные и двойные кавычки
         int cod = 200;
         int count_figure = 0, count_square = 0;
@@ -182,20 +184,20 @@ private:
 
 public:
     JsonData(string path){
-        /* Считывает данные из файла и записывает */
+        /* Конструктор. Считывает данные из файла и записывает */
         cod = 400;
         ifstream myFile(path);
         if (!myFile.is_open() && isJSONFile(path)){
             return;
         }
         string line = "";
-        string all_text = "";
+        jsonText = "";
         while (getline(myFile, line)){
-            all_text += line;
+            jsonText += line + '\n';
         }
-        cod = correctData(all_text);
+        cod = correctData(jsonText);
         if (cod == 200)
-            rootGroupItems = getChildren(all_text);
+            rootGroupItems = getChildren(jsonText);
     }
 
     vector<GroupItem> getData(){
@@ -203,6 +205,10 @@ public:
         if (cod != 200)
             return empty_data;
         return rootGroupItems;
+    }
+
+    string getJsonText(){
+        return jsonText;
     }
 
     int rootSize(){

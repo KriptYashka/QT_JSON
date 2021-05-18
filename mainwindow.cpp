@@ -37,6 +37,7 @@ void MainWindow::on_btnReadJson_clicked(){
     ui->resultLabel->setText(QString::fromStdString(resultText));
     QFont font = ui->resultLabel->font();
     viewModel->clear();
+    ui->jsontext->setText(QString::fromStdString(jsondata.getJsonText()));
 
     if (jsondata.isError()){
         font.setBold(true);
