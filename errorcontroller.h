@@ -83,7 +83,7 @@ private:
 
             switch (symbol){
             case ',':
-                if (!isMark_2 || !isMark_1){
+                if (!isMark_2 && !isMark_1){
                     if ((isComma && !inSquare) || !hasItem){
                         cod = 404;
                         errorline = line_count;
@@ -97,7 +97,7 @@ private:
                 break;
 
             case ':':
-                if (!isMark_2 || !isMark_1){
+                if (!isMark_2 && !isMark_1){
                     if ((isColon && !inSquare) || !hasName){
                         cod = 405;
                         errorline = line_count;
@@ -111,7 +111,7 @@ private:
                 break;
 
             case '{':
-                if (!isMark_2 || !isMark_1){
+                if (!isMark_2 && !isMark_1){
                     isComma = false, isColon = false;
                     inSquare = false;
                     hasItem = false;
@@ -122,7 +122,7 @@ private:
                 break;
 
             case '}':
-                if (!isMark_2 || !isMark_1){
+                if (!isMark_2 && !isMark_1){
                     count_figure--;
                     isColon = false;
                     isComma = false;
@@ -135,7 +135,7 @@ private:
                 break;
 
             case '[':
-                if (!isMark_2 || !isMark_1){
+                if (!isMark_2 && !isMark_1){
                     isComma = false, isColon = false;
                     inSquare = true;
                     count_square++;
@@ -145,7 +145,7 @@ private:
                 break;
 
             case ']':
-                if (!isMark_2 || !isMark_1){
+                if (!isMark_2 && !isMark_1){
                     count_square--;
                 }
                 if (!hasItem){
