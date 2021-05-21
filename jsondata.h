@@ -139,13 +139,13 @@ public:
             jsonText += line + '\n';
         }
         error = ErrorController(jsonText);
-        if (error.getCod() == 200)
+        if (error.isOk())
             rootGroupItems = getChildren(jsonText);
     }
 
     vector<GroupItem> getData(){
         vector<GroupItem> empty_data;
-        if (error.isOk())
+        if (!error.isOk())
             return empty_data;
         return rootGroupItems;
     }
@@ -160,7 +160,7 @@ public:
 
     GroupItem at(int row){
         GroupItem empty_data;
-        if (error.isOk() || (row < 0 || row >= (int)rootGroupItems.size()))
+        if (!error.isOk() || (row < 0 || row >= (int)rootGroupItems.size()))
             return empty_data;
         return rootGroupItems.at(row);
     }
@@ -171,6 +171,14 @@ public:
 
     bool isError(){
         return error.getCod() != 200;
+    }
+
+    int getLineError(){
+        return error.getErrorLine();
+    }
+
+    int getColError(){
+        return error.getErrorCol();
     }
 };
 

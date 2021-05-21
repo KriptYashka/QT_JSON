@@ -40,6 +40,11 @@ void MainWindow::on_btnReadJson_clicked(){
     ui->jsontext->setText(QString::fromStdString(jsondata.getJsonText()));
 
     if (jsondata.isError()){
+        int line = jsondata.getLineError(), col = jsondata.getColError();
+        if (line != -1 && col != -1){
+            QString errorstr = "Error line: " + QString::number(line) + ", col: " + QString::number(col);
+            ui->resultLabel->setText(ui->resultLabel->text() + '\n' + errorstr);
+        }
         font.setBold(true);
         ui->resultLabel->setStyleSheet("QLabel { color : red; } QLabel:hover { color : black; }");
         ui->btnShowJson->setDisabled(true);
@@ -55,5 +60,4 @@ void MainWindow::on_btnReadJson_clicked(){
             viewModel->appendRow(rootGroup);
         }
     }
-
 }
