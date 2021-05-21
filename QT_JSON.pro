@@ -13,6 +13,7 @@ SOURCES += \
     mainwindow.cpp
 
 HEADERS += \
+    errorcontroller.h \
     groupitem.h \
     jsondata.h \
     mainwindow.h

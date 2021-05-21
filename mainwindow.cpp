@@ -33,7 +33,7 @@ void MainWindow::on_btnReadJson_clicked(){
     string path = "test.json";
     //JsonData jsondata = JsonData(filePath.toStdString());
     JsonData jsondata = JsonData(path);
-    string resultText = jsondata.getCodeText();
+    string resultText = jsondata.getCodText();
     ui->resultLabel->setText(QString::fromStdString(resultText));
     QFont font = ui->resultLabel->font();
     viewModel->clear();
