@@ -9,8 +9,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     this->setWindowIcon(winIcon);
 }
 
-MainWindow::~MainWindow()
-{
+MainWindow::~MainWindow(){
     delete ui;
     delete viewModel;
 }
@@ -48,7 +47,6 @@ void MainWindow::on_btnReadJson_clicked(){
         font.setBold(true);
         ui->resultLabel->setStyleSheet("QLabel { color : red; } QLabel:hover { color : black; }");
         ui->btnShowJson->setDisabled(true);
-
     } else {
         ui->btnShowJson->setDisabled(false);
         font.setBold(false);

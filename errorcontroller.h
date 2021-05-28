@@ -20,6 +20,12 @@ private:
     string codText;
     string jsonText;
 
+    void setProperty(int code, int line, int col){
+        cod = code;
+        errorline = line;
+        errorcol = col;
+    }
+
     void setCodText(){
         switch (cod) {
         case 200:
@@ -196,31 +202,16 @@ private:
             }
         }
         if (isOk()){
-            if (isColon){
-                cod = 405;
-                errorline = line_last_opened_figure;
-                errorcol = col_last_opened_figure;
-            }
-            if (count_figure > 0){
-                cod = 401;
-                errorline = line_last_opened_figure;
-                errorcol = col_last_opened_figure;
-            }
-            if (count_square > 0){
-                cod = 401;
-                errorline = line_last_opened_square;
-                errorcol = col_last_opened_square;
-            }
-            if (isMark_1){
-                cod = 403;
-                errorline = line_last_opened_mark_1;
-                errorcol = col_last_opened_mark_1;
-            }
-            if (isMark_2){
-                cod = 403;
-                errorline = line_last_opened_mark_2;
-                errorcol = col_last_opened_mark_2;
-            }
+            if (isColon)
+                setProperty(405, line_last_opened_figure, col_last_opened_figure);
+            if (count_figure > 0)
+                setProperty(401, line_last_opened_figure, col_last_opened_figure);
+            if (count_square > 0)
+                setProperty(401, line_last_opened_square, col_last_opened_square);
+            if (isMark_1)
+                setProperty(403, line_last_opened_mark_1, col_last_opened_mark_1);
+            if (isMark_2)
+                setProperty(403, line_last_opened_mark_2, col_last_opened_mark_2);
         }
     }
 
