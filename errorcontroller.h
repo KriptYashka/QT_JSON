@@ -67,7 +67,6 @@ private:
         string forbidden_symbols = "+-*/|_\()<>;%^&!~";
         int line_count = 1, col_count = 0;
         /* Счетчики открытых символов */
-//        int line_last_opened_colon = 1, col_last_opened_colon = 1;
         int line_last_opened_figure = 1, col_last_opened_figure = 1;
         int line_last_opened_square = 1, col_last_opened_square = 1;
         int line_last_opened_mark_1 = 1, line_last_opened_mark_2 = 1;
