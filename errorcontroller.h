@@ -71,6 +71,8 @@ private:
         int line_last_opened_square = 1, col_last_opened_square = 1;
         int line_last_opened_mark_1 = 1, line_last_opened_mark_2 = 1;
         int col_last_opened_mark_1 = 1, col_last_opened_mark_2 = 1;
+        bool flag_bool = false;
+        string word = "";
         for (char symbol : text){
             col_count++;
             if (count_figure < 0 || count_square < 0){
@@ -86,10 +88,14 @@ private:
                 break;
             }
 
+            if ((word == "true") || (word == "false") || (word == "null")){
+                flag_bool = true;
+            }
+
             switch (symbol){
             case ',':
                 if (!isMark_2 && !isMark_1){
-                    if ((isComma && !inSquare) || !hasItem){
+                    if ((isComma && !inSquare) || (!hasItem && !flag_bool)){
                         cod = 404;
                         errorline = line_count;
                         errorcol = col_count;
@@ -98,6 +104,8 @@ private:
                     isComma = true;
                     hasItem = false;
                     hasName = false;
+                    flag_bool = false;
+                    word = "";
                 }
                 break;
 
@@ -112,6 +120,8 @@ private:
                     isComma = false;
                     isColon = true;
                     hasName = false;
+                    flag_bool = false;
+                    word = "";
                 }
                 break;
 
@@ -123,6 +133,7 @@ private:
                     count_figure++;
                     line_last_opened_figure = line_count;
                     col_last_opened_figure = col_count;
+                    word = "";
                 }
                 break;
 
@@ -136,6 +147,7 @@ private:
                     } else {
                         inSquare = false;
                     }
+                    word = "";
                 }
                 break;
 
@@ -146,18 +158,21 @@ private:
                     count_square++;
                     line_last_opened_square = line_count;
                     col_last_opened_square = col_count;
+                    word = "";
                 }
                 break;
 
             case ']':
                 if (!isMark_2 && !isMark_1){
                     count_square--;
+                    word = "";
                 }
-                if (!hasItem){
+                if (!hasItem && !flag_bool){
                     cod = 404;
                     errorline = line_count;
                     errorcol = col_count;
                 }
+                flag_bool = false;
                 break;
 
             case '"':
@@ -186,6 +201,9 @@ private:
                 break;
 
             default:
+                if (!isspace(symbol)){
+                    word += symbol;
+                }
                 if ((isdigit(symbol) || isMark_1 || isMark_2)){
                     hasItem = true;
                 }
